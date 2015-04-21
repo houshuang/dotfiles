@@ -12,6 +12,7 @@ Plug 'tpope/vim-characterize'
 Plug 'tpope/vim-jdaddy'
 Plug 'sheerun/vim-json'
 
+Plug 'airblade/vim-gitgutter'
 
 
 Plug 'tpope/vim-eunuch'
@@ -22,6 +23,7 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-obsession'
 Plug 'tpope/vim-vinegar'
 Plug 'justincampbell/vim-railscasts'
+Plug 'airblade/vim-rooter'
 
 Plug 'tpope/vim-scriptease'
 Plug 'tpope/vim-unimpaired'
@@ -65,3 +67,14 @@ nnoremap go mzo<Esc>`z
 :nnoremap <F5> :buffers<CR>:buffer<Space>
 set wildcharm=<C-Z>
 nnoremap <F10> :b <C-Z>
+
+" Colorscheme
+colorscheme railscasts
+
+" Fugitive (from
+" http://www.reddit.com/r/vim/comments/21f4gm/best_workflow_when_using_fugitive/)
+nnoremap <space>ga :Git add %:p<CR><CR>
+nnoremap <space>gs :Gstatus<CR>
+nnoremap <space>gc :Gcommit -v -q<CR>
+nnoremap <space>gt :Gcommit -v -q %:p<CR>
+
