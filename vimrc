@@ -60,3 +60,8 @@ source ~/src/dotfiles/vim-sensible-extended.vim
 " My own keymappings
 nnoremap gO mzO<Esc>`z
 nnoremap go mzo<Esc>`z
+
+" Buffer menus - TODO find a plugin that does this better?
+:nnoremap <F5> :buffers<CR>:buffer<Space>
+set wildcharm=<C-Z>
+nnoremap <F10> :b <C-Z>
