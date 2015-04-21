@@ -54,9 +54,8 @@ inoremap <C-Right> <esc>:tabnext<CR>
 
 tnoremap <c-a> <c-\><c-n>
 
-" Extras originally from TPope's sensible-vim, found in sheerun/vimrc
-" Y yanks from the cursor to the end of line as expected. See :help Y.
-nnoremap Y y$
+" Stuff left out from vim-sensible
+source ~/src/dotfiles/vim-sensible-extended.vim
 
 " My own keymappings
 nnoremap gO mzO<Esc>`z
