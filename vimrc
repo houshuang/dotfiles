@@ -12,9 +12,11 @@ Plug 'tpope/vim-characterize'
 Plug 'tpope/vim-jdaddy'
 Plug 'sheerun/vim-json'
 Plug 'Shougo/vimproc.vim'
+Plug 'dhruvasagar/vim-table-mode'
+Plug 'kassio/neoterm'
+Plug 'wellle/targets.vim'
 
 Plug 'airblade/vim-gitgutter'
-Plug 'kien/ctrlp.vim'
 
 Plug 'Shougo/unite.vim'
 
@@ -36,6 +38,7 @@ Plug 'Shougo/unite-help'
 Plug 'Shougo/unite-outline'
 Plug 'tsukkee/unite-tag'
 Plug 'ujihisa/unite-colorscheme'
+Plug 'kana/vim-arpeggio'
 
 Plug 'tpope/vim-scriptease'
 Plug 'tpope/vim-unimpaired'
@@ -50,7 +53,14 @@ call plug#end()
 
 "                 --------
 
-" Leader
+" Arpeggio chords
+function! s:common()
+  Arpeggio inoremap jk <Esc>
+  Arpeggio cnoremap jk <Esc>
+endfunction
+autocmd VimEnter * call s:common()
+
+
 let mapleader=","
 
 " Quickly edit .vimrc
@@ -62,7 +72,13 @@ set pastetoggle=<F2>
 
 " Easyclip
 " let g:EasyClipUseSubstituteDefaults = 1
+set clipboard=unnamed
+let g:EasyClipUsePasteToggleDefaults = 0
+let g:EasyClipUseCutDefaults = 0
 
+nmap x <Plug>MoveMotionPlug
+xmap x <Plug>MoveMotionXPlug
+nmap xx <Plug>MoveMotionLinePlug
 " Quicker window movement
 tnoremap <A-h> <C-\><C-n><C-w>h
 tnoremap <A-j> <C-\><C-n><C-w>j
@@ -123,7 +139,7 @@ nnoremap <leader>f :<C-u>Unite -no-split -buffer-name=files   -start-insert file
 nnoremap <leader>r :<C-u>Unite -no-split -buffer-name=mru     -start-insert file_mru<cr>
 nnoremap <leader>o :<C-u>Unite -no-split -buffer-name=outline -start-insert outline<cr>
 nnoremap <leader>y :<C-u>Unite -no-split -buffer-name=yank    history/yank<cr>
-nnoremap <leader>e :<C-u>Unite -no-split -buffer-name=buffer  buffer<cr>
+nnoremap <leader>b :<C-u>Unite -no-split -buffer-name=buffer  buffer<cr>
 
 " Custom mappings for the unite buffer
 autocmd FileType unite call s:unite_settings()
@@ -134,3 +150,7 @@ function! s:unite_settings()
   imap <buffer> <C-j>   <Plug>(unite_select_next_line)
   imap <buffer> <C-k>   <Plug>(unite_select_previous_line)
 endfunction
+
+
+nnoremap <silent> <f9> :call neoterm#repl#line()<cr> 
+vnoremap <silent> <f9> :call neoterm#repl#selection()<cr>
