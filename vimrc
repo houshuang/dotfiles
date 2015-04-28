@@ -5,8 +5,18 @@ if empty(glob('~/.vim/autoload/plug.vim'))
     autocmd VimEnter * PlugInstall
 endif
 
+let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
+
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-sensible'
+Plug 'majutsushi/tagbar'
+Plug 'leafgarland/typescript-vim'
+Plug 'ervandew/supertab'
+Plug 'godlygeek/tabular'
+Plug 'gabrielelana/vim-markdown'
+
+Plug 'plasticboy/vim-markdown'
+Plug 'Quramy/tsuquyomi'
 Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-characterize'
 Plug 'tpope/vim-jdaddy'
@@ -15,6 +25,10 @@ Plug 'Shougo/vimproc.vim'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'kassio/neoterm'
 Plug 'wellle/targets.vim'
+Plug 'scrooloose/nerdtree'
+Plug 'kana/vim-textobj-entire'
+Plug 'Lokaltog/vim-easymotion'
+Plug 'kana/vim-textobj-user'
 
 Plug 'airblade/vim-gitgutter'
 
@@ -73,12 +87,12 @@ set pastetoggle=<F2>
 " Easyclip
 " let g:EasyClipUseSubstituteDefaults = 1
 set clipboard=unnamed
-let g:EasyClipUsePasteToggleDefaults = 0
-let g:EasyClipUseCutDefaults = 0
+" let g:EasyClipUsePasteToggleDefaults = 0
+" let g:EasyClipUseCutDefaults = 0
 
-nmap x <Plug>MoveMotionPlug
-xmap x <Plug>MoveMotionXPlug
-nmap xx <Plug>MoveMotionLinePlug
+" nmap x <Plug>MoveMotionPlug
+" xmap x <Plug>MoveMotionXPlug
+" nmap xx <Plug>MoveMotionLinePlug
 " Quicker window movement
 tnoremap <A-h> <C-\><C-n><C-w>h
 tnoremap <A-j> <C-\><C-n><C-w>j
@@ -128,11 +142,10 @@ nnoremap <space>gt :Gcommit -v -q %:p<CR>
 " nnoremap <F2> :exe getline(".")<CR>
 " vnoremap <F2> :<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>
 
-silent! Glog<CR>:bot copen<CR>
 
 " Unite settings from http://www.codeography.com/2013/06/17/replacing-all-the-things-with-unite-vim.html
 
-let g:unite_source_history_yank_enable = 1
+" set g:unite_source_history_yank_enable = 1
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 nnoremap <leader>t :<C-u>Unite -no-split -buffer-name=files   -start-insert file_rec/async:!<cr>
 nnoremap <leader>f :<C-u>Unite -no-split -buffer-name=files   -start-insert file<cr>
@@ -151,8 +164,44 @@ function! s:unite_settings()
   imap <buffer> <C-k>   <Plug>(unite_select_previous_line)
 endfunction
 
+nnoremap <silent> <f9> :call neoterm#repl#line()<cr> 
+vnoremap <silent> <f9> :call neoterm#repl#selection()<cr>
+set tildeop
+let g:rooter_change_directory_for_non_project_files = 1
+let g:rooter_silent_chdir = 1
+map <F3> ;NERDTreeToggle<CR>
+autocmd VimEnter * if !argc() && !exists("s:std_in")| NERDTree | endif
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+autocmd VimEnter * wincmd p
+
+" Easymotion
+" nmap s <Plug>(easymotion-s2)
+" nmap t <Plug>(easymotion-t2)
+" nmap f <Plug>(easymotion-f2)
+
+
+" Should be last in file
 nnoremap ; :
 nnoremap ' ;
 nnoremap : ,
-nnoremap <silent> <f9> :call neoterm#repl#line()<cr> 
-vnoremap <silent> <f9> :call neoterm#repl#selection()<cr>
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+inoremap <A-j> <Esc>:m .+1<CR>==gi
+inoremap <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+
+let g:vitality_fix_focus = 1
+:au FocusLost * <Esc>
+:au FocusGained * <Esc>
+if &term =~ "xterm.*"
+    let &t_ti = &t_ti . "\e[?1004h"
+    let &t_te = "\e[?1004l" . &t_te
+    map <ESC>[O :w<CR>
+endif
+
+
+command DiffOrig let g:diffline = line('.') | vert new | set bt=nofile | r # | 0d_ | diffthis | :exe "norm! ".g:diffline."G" | wincmd p | diffthis | wincmd p
+nnoremap <Leader>do :DiffOrig<cr>
+nnoremap <leader>dc :q<cr>:diffoff<cr>:exe "norm! ".g:diffline."G"<cr>
