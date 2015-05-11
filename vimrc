@@ -16,6 +16,8 @@ Plug 'godlygeek/tabular'
 Plug 'gabrielelana/vim-markdown'
 
 Plug 'plasticboy/vim-markdown'
+Plug 'low-ghost/nerdtree-fugitive'
+
 Plug 'Quramy/tsuquyomi'
 Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-characterize'
@@ -40,7 +42,7 @@ Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-obsession'
-Plug 'tpope/vim-vinegar'
+" Plug 'tpope/vim-vinegar'
 Plug 'justincampbell/vim-railscasts'
 Plug 'airblade/vim-rooter'
 Plug 'sjl/vitality.vim'
@@ -52,6 +54,8 @@ Plug 'Shougo/unite-help'
 Plug 'Shougo/unite-outline'
 Plug 'tsukkee/unite-tag'
 Plug 'ujihisa/unite-colorscheme'
+Plug 'kana/vim-textobj-indent'
+
 Plug 'kana/vim-arpeggio'
 
 Plug 'tpope/vim-scriptease'
@@ -70,6 +74,8 @@ call plug#end()
 " Arpeggio chords
 function! s:common()
   Arpeggio inoremap jk <Esc>
+  Arpeggio xnoremap jk <Esc>
+  Arpeggio vnoremap jk <Esc>
   Arpeggio cnoremap jk <Esc>
 endfunction
 autocmd VimEnter * call s:common()
@@ -78,11 +84,7 @@ autocmd VimEnter * call s:common()
 let mapleader=","
 
 " Quickly edit .vimrc
-" nmap <silent> <leader>ev :e ~/src/dotfiles/vimrc<CR>
-" nmap <silent> <leader>sv :so ~/src/dotfiles/vimrc<CR>
-
-" Turn on when pasting text with indent etc
-set pastetoggle=<F2>
+nmap <silent> <leader>ev :e ~/src/dotfiles/vimrc<CR>
 
 " Easyclip
 " let g:EasyClipUseSubstituteDefaults = 1
@@ -132,10 +134,10 @@ colorscheme railscasts
 
 " Fugitive (from
 " http://www.reddit.com/r/vim/comments/21f4gm/best_workflow_when_using_fugitive/)
-nnoremap <space>ga :Git add %:p<CR><CR>
-nnoremap <space>gs :Gstatus<CR>
-nnoremap <space>gc :Gcommit -v -q<CR>
-nnoremap <space>gt :Gcommit -v -q %:p<CR>
+nnoremap <leader>ga :Git add %:p<CR><CR>
+nnoremap <leader>gs :Gstatus<CR>
+nnoremap <leader>gc :Gcommit -v -q<CR>
+nnoremap <leader>gt :Gcommit -v -q %:p<CR>
 
 " Execute line as vim-script (from
 " http://stackoverflow.com/questions/14385998/how-can-i-execute-the-current-line-as-vim-ex-commands)
@@ -184,12 +186,12 @@ autocmd VimEnter * wincmd p
 nnoremap ; :
 nnoremap ' ;
 nnoremap : ,
-nnoremap <A-j> :m .+1<CR>==
-nnoremap <A-k> :m .-2<CR>==
-inoremap <A-j> <Esc>:m .+1<CR>==gi
-inoremap <A-k> <Esc>:m .-2<CR>==gi
-vnoremap <A-j> :m '>+1<CR>gv=gv
-vnoremap <A-k> :m '<-2<CR>gv=gv
+nnoremap <C-j> :m .+1<CR>==
+nnoremap <C-k> :m .-2<CR>==
+inoremap <C-j> <Esc>:m .+1<CR>==gi
+inoremap <C-k> <Esc>:m .-2<CR>==gi
+vnoremap <C-j> :m '>+1<CR>gv=gv
+vnoremap <C-k> :m '<-2<CR>gv=gv
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 
 let g:vitality_fix_focus = 1
@@ -202,6 +204,25 @@ if &term =~ "xterm.*"
 endif
 
 
-command DiffOrig let g:diffline = line('.') | vert new | set bt=nofile | r # | 0d_ | diffthis | :exe "norm! ".g:diffline."G" | wincmd p | diffthis | wincmd p
+" command DiffOrig let g:diffline = line('.') | vert new | set bt=nofile | r # | 0d_ | diffthis | :exe "norm! ".g:diffline."G" | wincmd p | diffthis | wincmd p
 nnoremap <Leader>do :DiffOrig<cr>
 nnoremap <leader>dc :q<cr>:diffoff<cr>:exe "norm! ".g:diffline."G"<cr>
+   
+map <M-s> :w<kEnter>  "Works in normal mode, must press Esc first"
+imap <M-s> <Esc>:w<kEnter>i "Works in insert mode, saves and puts back in insert mode"
+
+" source vimrc on save
+augroup vimrc
+    au!
+    au BufWritePost *vimrc{,.local} if filereadable(expand('%'))|execute 'source ' . expand('%')|endif
+augroup END
+
+nnoremap gr :!osascript -e 'tell application "Google Chrome" to tell the active tab of its first window ' -e 'reload' -e 'end tell'<CR><CR>
+" nnoremap / :Commentary<CR>
+" xnoremap / :Commentary<CR>
+
+" word wrap instead of character wrap
+autocmd FileType * set formatoptions+=t
+
+" easy motion
+map <Space> <Plug>(easymotion-prefix)
