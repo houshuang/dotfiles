@@ -9,6 +9,8 @@ let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-sensible'
+Plug 'tyru/open-browser.vim'
+
 Plug 'majutsushi/tagbar'
 Plug 'leafgarland/typescript-vim'
 Plug 'ervandew/supertab'
@@ -29,7 +31,7 @@ Plug 'tpope/vim-characterize'
 Plug 'tpope/vim-jdaddy'
 Plug 'sheerun/vim-json'
 Plug 'Shougo/vimproc.vim'
-Plug 'dhruvasagar/vim-table-mode'
+" Plug 'dhruvasagar/vim-table-mode'
 Plug 'kassio/neoterm'
 Plug 'wellle/targets.vim'
 Plug 'scrooloose/nerdtree'
@@ -64,7 +66,7 @@ Plug 'tsukkee/unite-tag'
 Plug 'ujihisa/unite-colorscheme'
 Plug 'kana/vim-textobj-indent'
 
-Plug 'kana/vim-arpeggio' " keychord
+Plug 'houshuang/vim-arpeggio' " keychord
 
 Plug 'tpope/vim-scriptease'
 Plug 'tpope/vim-unimpaired'
@@ -87,6 +89,7 @@ function! s:common()
   Arpeggio xnoremap jk <Esc>
   Arpeggio vnoremap jk <Esc>
   Arpeggio cnoremap jk <Esc>
+  Arpeggio tnoremap jk <c-\><c-n>
 endfunction
 autocmd VimEnter * call s:common()
 
@@ -103,7 +106,7 @@ nmap <leader>ev :e ~/.vimrc<CR>
 set clipboard=unnamed
 " let g:EasyClipUsePasteToggleDefaults = 0
 " let g:EasyClipUseCutDefaults = 0
-
+nnoremap M m$
 " nmap x <Plug>MoveMotionPlug
 " xmap x <Plug>MoveMotionXPlug
 " nmap xx <Plug>MoveMotionLinePlug
@@ -112,6 +115,8 @@ tnoremap <A-h> <C-\><C-n><C-w>h
 tnoremap <A-j> <C-\><C-n><C-w>j
 tnoremap <A-k> <C-\><C-n><C-w>k
 tnoremap <A-l> <C-\><C-n><C-w>l
+tnoremap <C-Esc> <Esc>
+tmap <Esc> <C-\><C-n>
 nnoremap <A-h> <C-w>h
 nnoremap <A-j> <C-w>j
 nnoremap <A-k> <C-w>k
@@ -123,7 +128,24 @@ tnoremap <C-Right> <c-\><c-n>:tabnext<CR>
 inoremap <C-Left> <esc>:tabprevious<CR>
 inoremap <C-Right> <esc>:tabnext<CR>
 
-tnoremap <c-a> <c-\><c-n>
+autocmd BufWinEnter,WinEnter term://* startinsert
+set splitbelow
+set splitright
+
+" ,+num to change window number
+let i = 1
+while i <= 9
+    execute 'nnoremap <Leader>' . i . ' :' . i . 'wincmd w<CR>'
+    let i = i + 1
+endwhile
+
+let g:airline#extensions#tabline#enabled = 1
+
+nnoremap <Down> <C-d>zz
+nnoremap <Up> <C-u>zz
+nnoremap <Left> :bprevious<CR>
+nnoremap <Right> :bnext<CR>
+
 
 " Formatting a paragraph
 vmap Q gq
@@ -132,9 +154,10 @@ nmap Q gqap
 " Stuff left out from vim-sensible
 source ~/src/dotfiles/vim-sensible-extended.vim
 
-" My own keymappings
+" Empty line above, below or both, without moving or entering insert-mode
 nnoremap gO mzO<Esc>`z
 nnoremap go mzo<Esc>`z
+nnoremap <A-o> mzO<Esc>`zmzo<Esc>`z
 
 " Buffer menus - TODO find a plugin that does this better? Also use ,b for
 " unite
@@ -163,6 +186,7 @@ nnoremap <leader>gt :Gcommit -v -q %:p<CR>
 nnoremap <leader>f :CtrlP<CR>
 nnoremap <leader>r :CtrlPMRU<CR>
 nnoremap <leader>b :CtrlPBuffer<CR>
+nnoremap <leader>t :CtrlPTag<CR>
 
 " Custom mappings for the unite buffer
 autocmd FileType unite call s:unite_settings()
@@ -224,8 +248,8 @@ autocmd FileType * set formatoptions+=t
 " more intuitively
 " map <Space> <Plug>(easymotion-prefix)
 
-nnoremap <Space> <C-d>zz
-nnoremap <BS> <C-u>zz
+nnoremap <Space> <C-F>zz
+nnoremap <BS> <C-B>zz
 
 " Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
 vmap <Enter> <Plug>(EasyAlign)
@@ -246,6 +270,31 @@ function! RepeatChar(char, count)
  nnoremap s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
  nnoremap S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
 
+nnoremap Q @@
+xnoremap Q :normal @@<CR>
+
+" nnoremap <C-d> :vsp<CR><C-w>l <c-\><c-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR>
+" nnoremap <C-d> :sp<CR><C-w>l <c-\><c-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR>
+nnoremap <C-d> :vsp<CR>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR>
+nnoremap <C-e> :sp<CR>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR>
+noremap <C-q> <Esc>:q<CR>
+tnoremap <C-q> <C-\><C-n>:q<CR>
+
+nnoremap <silent> ,tl :call neoterm#clear()<cr>
+let g:neoterm_clear_cmd = "clear; printf '=%.0s' {1..80}; clear"
+let g:neoterm_position = 'vertical'
+let g:neoterm_automap_keys = ',tt'
+
+nnoremap <silent> <f10> :TREPLSendFile<cr>
+nnoremap <silent> <f9> :TREPLSend<cr>
+vnoremap <silent> <f9> :TREPLSend<cr>
+let g:python_host_prog='/usr/local/bin/python'
+
+
+" auto-google
+let g:netrw_nogx = 1 " disable netrw's gx mapping.
+nmap gx <Plug>(openbrowser-smart-search)
+vmap gx <Plug>(openbrowser-smart-search)
 
 " Should be last in file
 nnoremap ; :
