@@ -10,6 +10,10 @@ let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-sensible'
 Plug 'tyru/open-browser.vim'
+Plug 'elixir-lang/vim-elixir'
+Plug 'mattreduce/vim-mix'
+Plug 'rking/ag.vim'
+Plug 'scrooloose/syntastic'
 
 Plug 'majutsushi/tagbar'
 Plug 'leafgarland/typescript-vim'
@@ -32,7 +36,7 @@ Plug 'tpope/vim-jdaddy'
 Plug 'sheerun/vim-json'
 Plug 'Shougo/vimproc.vim'
 " Plug 'dhruvasagar/vim-table-mode'
-Plug 'kassio/neoterm'
+" Plug 'kassio/neoterm'
 Plug 'wellle/targets.vim'
 Plug 'scrooloose/nerdtree'
 Plug 'kana/vim-textobj-entire'
@@ -96,6 +100,31 @@ autocmd VimEnter * call s:common()
 let g:ctrlp_extensions = ['tag', 'buffertag', 'quickfix', 'dir', 'rtscript',
                         \ 'undo', 'line', 'changes', 'mixed', 'bookmarkdir']
 
+
+" function! SwitchToNextBuffer(incr)
+"   let current = bufnr("%")
+"   let last = bufnr("$")
+"   let new = current + a:incr
+"   while 1
+"     if new != 0 && bufexists(new) 
+"       execute ":buffer ".new
+"       break
+"     else
+"       let new = new + a:incr
+"       if new < 1
+"         let new = last
+"       elseif new > last
+"         let new = 1
+"       endif
+"       if new == current
+"         break
+"       endif
+"     endif
+"   endwhile
+" endfunction
+" nnoremap <C-1> :call SwitchToNextBuffer(1)<CR>
+" nnoremap <C-2> :call SwitchToNextBuffer(-1)<CR>
+
 let mapleader=","
 let g:easytags_async="true"
 " Quickly edit .vimrc - why isn't this working?
@@ -106,8 +135,9 @@ nmap <leader>ev :e ~/.vimrc<CR>
 set clipboard=unnamed
 " let g:EasyClipUsePasteToggleDefaults = 0
 " let g:EasyClipUseCutDefaults = 0
+ 
+nmap m <Plug>MoveMotionPlug
 nnoremap M m$
-" nmap x <Plug>MoveMotionPlug
 " xmap x <Plug>MoveMotionXPlug
 " nmap xx <Plug>MoveMotionLinePlug
 " Quicker window movement
@@ -139,12 +169,12 @@ while i <= 9
     let i = i + 1
 endwhile
 
-let g:airline#extensions#tabline#enabled = 1
+" let g:airline#extensions#tabline#enabled = 1
 
 nnoremap <Down> <C-d>zz
 nnoremap <Up> <C-u>zz
-nnoremap <Left> :bprevious<CR>
-nnoremap <Right> :bnext<CR>
+" nnoremap <Left> :bprevious<CR>
+" nnoremap <Right> :bnext<CR>
 
 
 " Formatting a paragraph
@@ -275,10 +305,12 @@ xnoremap Q :normal @@<CR>
 
 " nnoremap <C-d> :vsp<CR><C-w>l <c-\><c-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR>
 " nnoremap <C-d> :sp<CR><C-w>l <c-\><c-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR>
-nnoremap <C-d> :vsp<CR>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR>
-nnoremap <C-e> :sp<CR>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR>
+tnoremap <C-d> <C-\><C-n>:vsp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
+tnoremap <C-e> <C-\><C-n>:sp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
+nnoremap <C-d> :vsp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
+nnoremap <C-e> :sp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
 noremap <C-q> <Esc>:q<CR>
-tnoremap <C-q> <C-\><C-n>:q<CR>
+tnoremap <C-q> <C-\><C-n>:bd!<CR>
 
 nnoremap <silent> ,tl :call neoterm#clear()<cr>
 let g:neoterm_clear_cmd = "clear; printf '=%.0s' {1..80}; clear"
@@ -290,6 +322,15 @@ nnoremap <silent> <f9> :TREPLSend<cr>
 vnoremap <silent> <f9> :TREPLSend<cr>
 let g:python_host_prog='/usr/local/bin/python'
 
+"syntastic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
 
 " auto-google
 let g:netrw_nogx = 1 " disable netrw's gx mapping.
@@ -311,3 +352,6 @@ inoremap <C-j> <Esc>:m .+1<CR>==gi
 inoremap <C-k> <Esc>:m .-2<CR>==gi
 vnoremap <C-j> :m '>+1<CR>gv=gv
 vnoremap <C-k> :m '<-2<CR>gv=gv
+
+set number
+set relativenumber
