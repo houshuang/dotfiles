@@ -5,7 +5,13 @@ if empty(glob('~/.vim/autoload/plug.vim'))
     autocmd VimEnter * PlugInstall
 endif
 
+filetype plugin on
+set omnifunc=syntaxcomplete#Complete
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
+let g:ycm_collect_identifiers_from_tags_files = 1
+let g:ycm_seed_identifiers_with_syntax = 1
+let g:python_host_prog="/usr/bin/python"
+let g:ycm_filepath_completion_use_working_dir = 1
 
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-sensible'
@@ -14,17 +20,22 @@ Plug 'elixir-lang/vim-elixir'
 Plug 'mattreduce/vim-mix'
 Plug 'rking/ag.vim'
 Plug 'scrooloose/syntastic'
+Plug 'BjRo/vim-extest'
+Plug 'SirVer/ultisnips'
+Plug 'Valloric/YouCompleteMe'
+Plug 'ervandew/supertab'
 
+Plug 'honza/vim-snippets'
 Plug 'majutsushi/tagbar'
 Plug 'leafgarland/typescript-vim'
-Plug 'ervandew/supertab'
+" Plug 'ervandew/supertab'
 Plug 'godlygeek/tabular'
 Plug 'gabrielelana/vim-markdown'
 Plug 'houshuang/vim-rename'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'JazzCore/ctrlp-cmatcher'
 Plug 'xolox/vim-notes'
-
+Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'low-ghost/nerdtree-fugitive'
 Plug 'junegunn/vim-easy-align'
@@ -45,7 +56,6 @@ Plug 'kana/vim-textobj-user'
 
 Plug 'airblade/vim-gitgutter'
 
-Plug 'Shougo/unite.vim'
 Plug 'xolox/vim-misc'
 
 Plug 'xolox/vim-easytags'
@@ -56,18 +66,12 @@ Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-obsession'
-" Plug 'tpope/vim-vinegar'
 Plug 'justincampbell/vim-railscasts'
 Plug 'airblade/vim-rooter'
 Plug 'sjl/vitality.vim'
 Plug 'Shougo/neomru.vim'
 Plug 'bling/vim-airline'
-Plug 'osyo-manga/unite-airline_themes'
 Plug 'Shougo/junkfile.vim'
-Plug 'Shougo/unite-help'
-Plug 'Shougo/unite-outline'
-Plug 'tsukkee/unite-tag'
-Plug 'ujihisa/unite-colorscheme'
 Plug 'kana/vim-textobj-indent'
 
 Plug 'houshuang/vim-arpeggio' " keychord
@@ -86,7 +90,16 @@ Plug 'tpope/vim-surround'
 call plug#end()
 
 "                 --------
-
+" make YCM compatible with UltiSnips (using supertab)
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:SuperTabDefaultCompletionType = '<C-n>'
+"
+" better key bindings for UltiSnipsExpandTrigger
+let g:UltiSnipsExpandTrigger = "<tab>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+"
 " Arpeggio chords
 function! s:common()
   Arpeggio inoremap jk <Esc>
@@ -96,11 +109,12 @@ function! s:common()
   Arpeggio tnoremap jk <c-\><c-n>
 endfunction
 autocmd VimEnter * call s:common()
-
+inoremap ,. \|> 
 let g:ctrlp_extensions = ['tag', 'buffertag', 'quickfix', 'dir', 'rtscript',
                         \ 'undo', 'line', 'changes', 'mixed', 'bookmarkdir']
 
-
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
 " function! SwitchToNextBuffer(incr)
 "   let current = bufnr("%")
 "   let last = bufnr("$")
@@ -131,7 +145,7 @@ let g:easytags_async="true"
 nmap <leader>ev :e ~/.vimrc<CR>
 
 " Easyclip
-" let g:EasyClipUseSubstituteDefaults = 1
+let g:EasyClipUseSubstituteDefaults = 1
 set clipboard=unnamed
 " let g:EasyClipUsePasteToggleDefaults = 0
 " let g:EasyClipUseCutDefaults = 0
@@ -171,11 +185,15 @@ endwhile
 
 " let g:airline#extensions#tabline#enabled = 1
 
-nnoremap <Down> <C-d>zz
-nnoremap <Up> <C-u>zz
+" nnoremap <Down> <C-d>zz
+" nnoremap <Up> <C-u>zz
 " nnoremap <Left> :bprevious<CR>
 " nnoremap <Right> :bnext<CR>
 
+nmap <A-,> <c-w>w<c-d><c-w>w
+nmap <A-.> <c-w>w<c-u><c-w>w
+imap <A-,> <Esc><c-w>w<c-d><c-w>w
+imap <A-.> <Esc><c-w>w<c-u><c-w>w
 
 " Formatting a paragraph
 vmap Q gq
@@ -219,14 +237,6 @@ nnoremap <leader>b :CtrlPBuffer<CR>
 nnoremap <leader>t :CtrlPTag<CR>
 
 " Custom mappings for the unite buffer
-autocmd FileType unite call s:unite_settings()
-function! s:unite_settings()
-  " Play nice with supertab
-  let b:SuperTabDisabled=1
-  " Enable navigation with control-j and control-k in insert mode
-  imap <buffer> <C-j>   <Plug>(unite_select_next_line)
-  imap <buffer> <C-k>   <Plug>(unite_select_previous_line)
-endfunction
 
 nnoremap <silent> <f9> :call neoterm#repl#line()<cr> 
 vnoremap <silent> <f9> :call neoterm#repl#selection()<cr>
@@ -297,20 +307,20 @@ vnoremap gy yPV`]:Commentary<CR>`]j^
 function! RepeatChar(char, count)
    return repeat(a:char, a:count)
  endfunction
- nnoremap s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
- nnoremap S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
+ " nnoremap s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
+ " nnoremap S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
 
 nnoremap Q @@
 xnoremap Q :normal @@<CR>
 
 " nnoremap <C-d> :vsp<CR><C-w>l <c-\><c-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR>
 " nnoremap <C-d> :sp<CR><C-w>l <c-\><c-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR>
-tnoremap <C-d> <C-\><C-n>:vsp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
-tnoremap <C-e> <C-\><C-n>:sp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
-nnoremap <C-d> :vsp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
-nnoremap <C-e> :sp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
-noremap <C-q> <Esc>:q<CR>
-tnoremap <C-q> <C-\><C-n>:bd!<CR>
+" tnoremap <C-d> <C-\><C-n>:vsp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
+" tnoremap <C-e> <C-\><C-n>:sp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
+" nnoremap <C-d> :vsp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
+" nnoremap <C-e> :sp<CR><C-\><C-n>:term cd <C-r>=expand("%:p:h")<CR>; /usr/local/bin/fish<CR><C-l>
+" noremap <C-q> <Esc>:q<CR>
+" tnoremap <C-q> <C-\><C-n>:bd!<CR>
 
 nnoremap <silent> ,tl :call neoterm#clear()<cr>
 let g:neoterm_clear_cmd = "clear; printf '=%.0s' {1..80}; clear"
@@ -320,7 +330,7 @@ let g:neoterm_automap_keys = ',tt'
 nnoremap <silent> <f10> :TREPLSendFile<cr>
 nnoremap <silent> <f9> :TREPLSend<cr>
 vnoremap <silent> <f9> :TREPLSend<cr>
-let g:python_host_prog='/usr/local/bin/python'
+let g:python_host_prog="/usr/bin/python"
 
 "syntastic
 set statusline+=%#warningmsg#
@@ -331,7 +341,10 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
+autocmd Filetype javascript setlocal ts=4 sw=4 sts=0 expandtab
+autocmd Filetype html setlocal ts=4 sw=4 sts=0 expandtab
 
+nmap Q ;q <enter>
 " auto-google
 let g:netrw_nogx = 1 " disable netrw's gx mapping.
 nmap gx <Plug>(openbrowser-smart-search)
